@@ -13,14 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// トップページ
 Route::get('/', function () {
-    return view('welcome');
+    return view('top');
 });
 
+// 認証
 Auth::routes();
-
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::prefix('owner')->namespace('Ondew')->name('employee.')->group(function(){
+Route::prefix('owner')->namespace('Ondew')->name('employee.')->group(function () {
     Auth::routes();
 });
