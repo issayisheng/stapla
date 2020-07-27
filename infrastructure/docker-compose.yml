@@ -1,27 +1,48 @@
 version: "3"
 volumes:
-  db-store:
-  php-fpm-socket:
+    db-store:
+    php-fpm-socket:
 services:
-  app:
-    build: ./docker/php
-    volumes:
-      - php-fpm-socket:/var/run/php-fpm
-      - ../backend:/work/backend
-      - ./docker/php/bash/.bash_history:/root/.bash_history
-      - ./docker/php/bash/psysh:/root/.config/psysh
+    app:
+        build: ./docker/php
+        container_name: stapla-app
+        volumes:
+            - php-fpm-socket:/var/run/php-fpm
+            - ../backend:/work/backend
+            - ./docker/php/bash/.bash_history:/root/.bash_history
+            - ./docker/php/bash/psysh:/root/.config/psysh
 
-  web:
-    build: ./docker/nginx
-    ports:
-      - 8888:80
-    volumes:
-      - php-fpm-socket:/var/run/php-fpm
-      - ../backend:/work/backend
+    web:
+        build: ./docker/nginx
+        container_name: stapla-web
+        ports:
+            - 8888:80
+        volumes:
+            - php-fpm-socket:/var/run/php-fpm
+            - ../backend:/work/backend
 
-  db:
-    build: ./docker/mysql
-    volumes:
-      - db-store:/var/lib/mysql
-    ports:
-      - 3306:3306
+    db:
+        build: ./docker/mysql
+        container_name: stapla-db
+        volumes:
+            - db-store:/var/lib/mysql
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_DATABASE: laravel_local
+            MYSQL_USER: phper
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: secret
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: stapla-phpmyadmin
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_HOSTS=db
+            - PMA_USER=phper
+            - PMA_PASSWORD=secret
+        depends_on:
+            - db
+        ports:
+            - 8500:80
