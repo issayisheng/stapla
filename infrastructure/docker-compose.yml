@@ -46,3 +46,5 @@ services:
             - db
         ports:
             - 8500:80
+        volumes:
+            - ./docker/phpmyadmin/sessions:/sessions
